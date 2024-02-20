@@ -1,6 +1,7 @@
 package com.multithreading.datastructures;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 
@@ -8,6 +9,7 @@ public class StackWithoutLock {
 
     private static class StaticStack<T> {
         public AtomicReference<StackNode<T>> head = new AtomicReference<>();
+        private AtomicInteger counter = new AtomicInteger(0);
 
         public void push(T value) {
             StackNode<T> newNode = new StackNode<>(value);
@@ -21,6 +23,7 @@ public class StackWithoutLock {
                     LockSupport.parkNanos(2);
                 }
             }
+            counter.incrementAndGet();
         }
 
         public T pop() {
@@ -35,7 +38,12 @@ public class StackWithoutLock {
                     currentHead = head.get();
                 }
             }
+            counter.incrementAndGet();
             return Objects.nonNull(currentHead) ? currentHead.value : null;
+        }
+
+        public int getCounter() {
+            return counter.get();
         }
     }
 
